@@ -1,0 +1,35 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+# Vendor dependencies (installed via Composer)
+vendor/
+
+# Symfony cache, logs, and other generated files
+var/
+
+# Build assets (if using Webpack Encore or similar)
+public/build/
+
+# Node modules (if applicable)
+node_modules/
+
+
+# PHPStorm project files
+.idea/
+*.iml
+
+# Other IDE and editor specific files
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
