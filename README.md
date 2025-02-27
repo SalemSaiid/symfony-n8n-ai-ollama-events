@@ -88,6 +88,13 @@ Our automation workflow, managed by n8n, performs the following steps:
 - 6 - Adjust the credentials and endpoint URLs (for OpenAI, Telegram, and your AI Agent SQL) as needed.
 - 7 - Save and activate your workflow.
 
+## Summary of the service accesses:
+- ✅ Symfony: http://symfony.127.0.0.1.nip.io
+- ✅ n8n (HTTPS): https://n8n.127.0.0.1.nip.io
+- ✅ RabbitMQ: http://rabbitmq.127.0.0.1.nip.io
+- ✅ Traefik Dashboard: http://traefik.127.0.0.1.nip.io
+- ✅ PgAdmin: http://pgadmin.127.0.0.1.nip.io
+
 ## Usage
 Creating an Event
 To create a new event, send a POST request to your Symfony API. For example, using cURL or Postman:
