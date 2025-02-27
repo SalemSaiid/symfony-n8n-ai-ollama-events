@@ -30,6 +30,10 @@ node_modules/
 *.sublime-project
 *.sublime-workspace
 
+#dev files
+/doc-dev.txt
+/n8n.json
+
 # OS generated files
 .DS_Store
 Thumbs.db

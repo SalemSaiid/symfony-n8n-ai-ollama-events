@@ -1,4 +1,31 @@
+version: '3.8'
+
 services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Dashboard Traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - traefik_net
+    command:
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=ton@email.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.127.0.0.1.nip.io`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
 
   php:
     image: php:8.2-fpm
@@ -9,13 +36,7 @@ services:
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
       - MESSENGER_TRANSPORT_DSN=amqp://guest:guest@rabbitmq:5672/%2f/messages
-      - DATABASE_URL=postgresql://symfony_user:symfony_password@postgres:5432/symfony_db
-    depends_on:
-      - rabbitmq
-      - database
-      - redis
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - DATABASE_URL=postgresql://symfony_user:symfony_password@database:5432/symfony_db
     entrypoint: >
       sh -c "apt-get update &&
              apt-get install -y librabbitmq-dev libssl-dev libpq-dev git unzip &&
@@ -24,22 +45,28 @@ services:
              docker-php-ext-install pdo pdo_pgsql &&
              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
              php-fpm"
+    depends_on:
+      - rabbitmq
+      - database
+      - redis
     networks:
-      - symfony_network
+      - traefik_net
 
   nginx:
     image: nginx:latest
     container_name: symfony_nginx
-    ports:
-      - "80:80"
     volumes:
       - .:/var/www/symfony
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php
-      - n8n
     networks:
-      - symfony_network
+      - traefik_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.symfony.rule=Host(`symfony.127.0.0.1.nip.io`)"
+      - "traefik.http.routers.symfony.entrypoints=web"
+      - "traefik.http.services.symfony.loadbalancer.server.port=80"
 
   database:
     image: postgres:15
@@ -49,12 +76,10 @@ services:
       POSTGRES_DB: symfony_db
       POSTGRES_USER: symfony_user
       POSTGRES_PASSWORD: symfony_password
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - symfony_network
+      - traefik_net
 
   pgadmin:
     image: dpage/pgadmin4
@@ -63,53 +88,65 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
     depends_on:
       - database
     networks:
-      - symfony_network
+      - traefik_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.127.0.0.1.nip.io`)"
+      - "traefik.http.routers.pgadmin.entrypoints=web"
+      - "traefik.http.services.pgadmin.loadbalancer.server.port=80"
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     networks:
-      - symfony_network
+      - traefik_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.127.0.0.1.nip.io`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=web"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
 
   redis:
     image: redis:latest
     container_name: redis
-    ports:
-      - "6379:6379"
     networks:
-      - symfony_network
+      - traefik_net
 
   n8n:
     image: n8nio/n8n
     container_name: n8n
-    ports:
-      - "5678:5678"
     environment:
+      - N8N_SESSION_COOKIE_SECURE=false
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=admin
       - N8N_BASIC_AUTH_PASSWORD=admin
-      - WEBHOOK_TUNNEL_URL=https://<ngrok_url>/webhook  # Remplace <ngrok_url> par l'URL du tunnel si nécessaire
       - GENERIC_TIMEZONE=Europe/Paris
-      - N8N_HOST=n8n
-      - N8N_PROTOCOL=http
+      - N8N_PROTOCOL=https
+      - N8N_HOST=n8n.127.0.0.1.nip.io
+      - WEBHOOK_URL=https://n8n.127.0.0.1.nip.io/
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      - n8n_data:/home/node/.n8n
     networks:
-      - symfony_network
+      - traefik_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.127.0.0.1.nip.io`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=myresolver"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+
+networks:
+  traefik_net:
+    external: true
 
 volumes:
   postgres_data:
-  redis_data:
-
-networks:
-  symfony_network:
-    driver: bridge
+  n8n_data:
+  letsencrypt:
