@@ -33,12 +33,18 @@ final class EventController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         $shortDescription = $data['shortDescription'] ?? '';
+        $startDate = $data['startDate'] ?? '';
+        $endDate = $data['endDate'] ?? '';
 
-        $eventId = uniqid('', true);
 
-        $this->bus->dispatch(new \App\Message\EventMessage($eventId, $shortDescription));
+        $this->bus->dispatch(new \App\Message\EventMessage($shortDescription, $startDate, $endDate));
 
-        return new JsonResponse(['status' => 'Event created', 'id' => $eventId]);
+        return new JsonResponse(['status' => 'Success request => Event being created !!',
+            'data' => [
+               'shortDescription' => $shortDescription,
+               'startDate' => $startDate,
+               'endDate' => $endDate,
+        ]]);
     }
 
     #[Route('/api/events', name: 'app_get_events', methods: ['GET'])]

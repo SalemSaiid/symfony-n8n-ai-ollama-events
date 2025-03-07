@@ -4,19 +4,39 @@ namespace App\Message;
 
 class EventMessage
 {
-    private $eventId;
     private $shortDescription;
+    private $startDate;
+    private $endDate;
 
-    public function __construct(string $eventId, string $shortDescription)
+    /**
+     * EventMessage constructor.
+     * @param string $shortDescription
+     * @param string $startDate
+     * @param string $endDate
+     */
+    public function __construct(string $shortDescription, string $startDate, string $endDate)
     {
-        $this->eventId = $eventId;
         $this->shortDescription = $shortDescription;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
     }
 
-    public function getEventId(): string
+    /**
+     * @return string
+     */
+    public function getStartDate(): string
     {
-        return $this->eventId;
+        return $this->startDate;
     }
+
+    /**
+     * @return string
+     */
+    public function getEndDate(): string
+    {
+        return $this->endDate;
+    }
+
 
     public function getShortDescription(): string
     {

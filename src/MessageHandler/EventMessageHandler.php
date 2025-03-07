@@ -9,15 +9,18 @@ class EventMessageHandler
 {
     public function __invoke(EventMessage $message)
     {
-        $eventId = $message->getEventId();
+        $startDate= $message->getStartDate();
+        $endDate = $message->getEndDate();
         $shortDescription = $message->getShortDescription();
 
-        // Appel au webhook n8n en passant l'ID de l'événement et la shortDescription
         $webhookUrl = 'http://n8n:5678/webhook-test/event';
+
         $payload = json_encode([
-            'eventId'          => $eventId,
+            'startDate'          => $startDate,
+            'endDate'          => $endDate,
             'shortDescription' => $shortDescription
         ]);
+
         $ch = curl_init($webhookUrl);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
