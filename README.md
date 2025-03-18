@@ -3,6 +3,10 @@
 <img width="1624" alt="image" src="https://github.com/user-attachments/assets/1f26cd27-2d26-48a7-8e2c-686b7f130267" />
 
 
+https://github.com/user-attachments/assets/383f1fb8-ebf0-42e2-bcb0-677aaab64f1a
+
+
+
 Welcome to **Symfony-n8n-OpenAI Events**! This project leverages the power of Symfony, n8n, and AI agents to automatically create, process, and share event information. We’ve ditched Elasticsearch and now use PostgreSQL for data insertion via our clever AI Agent. Say goodbye to repetitive tasks and hello to automation magic—powered by intelligent bots and a generous dose of humor!
 
 ## Why Automation, n8n, and AI Agents?
