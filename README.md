@@ -1,13 +1,10 @@
-# Symfony-n8n-OpenAI Events 
-
-<img width="1624" alt="image" src="https://github.com/user-attachments/assets/1f26cd27-2d26-48a7-8e2c-686b7f130267" />
+# Symfony, Traefik, n8n, Ollama & RabbitMQ with Docker
 
 
 https://github.com/user-attachments/assets/383f1fb8-ebf0-42e2-bcb0-677aaab64f1a
 
 
-
-Welcome to **Symfony-n8n-OpenAI Events**! This project leverages the power of Symfony, n8n, and AI agents to automatically create, process, and share event information. We’ve ditched Elasticsearch and now use PostgreSQL for data insertion via our clever AI Agent. Say goodbye to repetitive tasks and hello to automation magic—powered by intelligent bots and a generous dose of humor!
+Welcome to **Symfony-n8n-OpenAI Events**! This project leverages the power of Symfony, n8n, Ollama and AI agents to automatically create, process, and share event information. Our AI Agent now handles data insertion into PostgreSQL, eliminating repetitive tasks and bringing automation magic—enhanced by intelligent bots and a touch of humor!
 
 ## Why Automation, n8n, and AI Agents?
 ![image](https://github.com/user-attachments/assets/5ea2b825-285f-40c3-91ae-aefa9fe45e0d) <br>
@@ -20,125 +17,102 @@ Imagine a world where your boring tasks are handled by tireless digital minions�
 - And, thanks to our AI Agent SQL, insert the data into PostgreSQL.
 - Finally, the event is shared on Telegram for the world to see.
 
-## Prerequisites
 
-Before you start, make sure you have:
-- [Git](https://git-scm.com/)
-- [Docker & Docker Compose](https://docs.docker.com/compose/install/)
-- [Composer](https://getcomposer.org/) (or use it via Docker if you prefer)
-- API keys for:
-  - **OpenAI (ChatGPT)**
-  - **Telegram**
-- A dash of humor, a hearty cup of coffee, and a passion for automating the mundane!
+This repository provides a fully functional Docker-based setup for a Symfony application integrated with Traefik, n8n, RabbitMQ, PostgreSQL, Redis, and OpenUI. The system allows seamless event processing using AI automation.
 
-## Cloning the Repository
+## 🚀 Features
+- **Symfony** with PHP 8.2 (FPM)
+- **PostgreSQL** database with **pgAdmin**
+- **RabbitMQ** for event-driven processing
+- **Redis** for caching
+- **n8n** for workflow automation
+- **Traefik** as a reverse proxy and automatic SSL management
+- **OpenUI with Ollama** for AI-powered operations
 
-Clone this repository to your local machine:
+## 🛠 Requirements
+- **Docker** & **Docker Compose**
+- **Internet connection** for initial setup
 
-```bash
-git clone https://github.com/yourusername/symfony-n8n-openai-events.git
-cd symfony-n8n-openai-events
+## 📦 Installation
+1. **Clone the repository**:
+      ```bash
+   git clone https://github.com/yourusername/symfony-n8n-openai-events.git
+       cd symfony-n8n-openai-events
+   ```
+2. **Create a `.env` file** and configure environment variables if needed.
+3. **Start the services**:
+   ```bash
+   docker-compose up -d
+   ```
+4. **Access services**:
+   - **Symfony API** → `http://symfony.127.0.0.1.nip.io`
+   - **Traefik Dashboard** → `http://traefik.127.0.0.1.nip.io`
+   - **n8n** → `https://n8n.127.0.0.1.nip.io`
+   - **OpenUI** → `http://openui.127.0.0.1.nip.io`
+   - **RabbitMQ** → `http://rabbitmq.127.0.0.1.nip.io`
+   - **pgAdmin** → `http://pgadmin.127.0.0.1.nip.io`
 
-```
-## Running the Project with Docker Compose
-Our project is fully containerized using Docker Compose. No need for a separate Dockerfile build process—everything is managed via the docker-compose.yml file.
+## 📌 Usage
 
-Simply run:
-```bash
-docker-compose up --build
-```
-
-## This command will spin up the following services:
-
-- PHP8 (Symfony7): Your Symfony application running on PHP-FPM.<br>
-- Nginx: Serving your Symfony app on port 80.<br>
-- PostgreSQL: Our new star for data insertion on port 5432.<br>
-- pgAdmin: For managing PostgreSQL at http://localhost:5050.<br>
-- RabbitMQ: For message queuing at http://localhost:15672.<br>
-- Redis: On port 6379.<br>
-- n8n: Our automation powerhouse at http://localhost:5678.<br><br>
-
-## Installing Symfony Dependencies
-Once your containers are up and running, install the Symfony dependencies using Composer. Open a terminal inside the PHP container:
-
-```bash
-docker-compose exec php composer install
-```
-
-This command installs all the necessary PHP packages for your Symfony application.
-
-## Managing the n8n Workflow
-Our automation workflow, managed by n8n, performs the following steps:
-
-1- Webhook Event: Receives the event ID and a short description.
-
-2- ChatGPT Description: Generates a detailed event description from the short description.
-
-3- ChatGPT Translation: Translates the detailed description into Arabic and English, returning a JSON object
-
-4- ChatGPT Prepare: Prepares the complete event data (title, detailed description, translations, date, etc.) for SQL insertion.
-
-5- AI Agent SQL: Calls an endpoint to insert these data into PostgreSQL.
-
-6- Telegram: Shares the event on a Telegram channel so everyone can admire your automation genius.
-
-##  How to Set Up Your Workflow:
-
-- 1 - Open your browser and navigate to http://localhost:5678.
-- 2 - Log in with the default credentials (admin/admin, unless changed).
-- 3 - Import the workflow JSON file located at workflows/workflow_event.json:
-- 4 - Click Import in the n8n interface (usually in the top right menu).
-- 5 - Select the workflow_event.json file and import it.
-- 6 - Adjust the credentials and endpoint URLs (for OpenAI, Telegram, and your AI Agent SQL) as needed.
-- 7 - Save and activate your workflow.
-
-## Summary of the service accesses:
-- ✅ Symfony: http://symfony.127.0.0.1.nip.io
-- ✅ n8n (HTTPS): https://n8n.127.0.0.1.nip.io
-- ✅ RabbitMQ: http://rabbitmq.127.0.0.1.nip.io
-- ✅ Traefik Dashboard: http://traefik.127.0.0.1.nip.io
-- ✅ PgAdmin: http://pgadmin.127.0.0.1.nip.io
-
-## Usage
-Creating an Event
-To create a new event, send a POST request to your Symfony API. For example, using cURL or Postman:
+### 📝 Creating an Event
+To create a new event, send a `POST` request to your Symfony API. Example using **cURL** or **Postman**:
 
 ```bash
 POST http://localhost/api/event
 Content-Type: application/json
 
 {
-  "title": "Symfony Conference",
-  "shortDescription": "A conference about Symfony and best practices",
-  "date": "2025-03-01T10:00:00"
+    "startDate": "2025-06-04 12:00",
+    "endDate": "2025-06-04 18:00",
+    "shortDescription": "EVENT Paris: IT DEVOPS"
 }
 ```
 
-## What happens next?
+## 🔄 What happens next?
 
-- The event is assigned a unique ID and inserted into PostgreSQL (initially with an empty detailed description).
-- A message is dispatched to RabbitMQ, triggering the n8n workflow.
-- The workflow generates and translates the event description, prepares the data, and calls the AI Agent SQL to insert the data into PostgreSQL.
-- Finally, the event is shared on Telegram.
+Once an event is created, an automated workflow is triggered. Here’s what happens step by step:
 
-## Get Events
+1. **Database Insertion (PostgreSQL)**  
+   - The Symfony API assigns a unique **ID** to the event.  
+   - The event is **inserted into the PostgreSQL database** with an empty detailed description.
+
+2. **Message Dispatching (RabbitMQ)**  
+   - A message with event data is **sent to RabbitMQ**.  
+   - This message **triggers the n8n workflow** for further processing.
+
+3. **Workflow Execution (n8n Automation)**  
+   - The n8n workflow **receives the RabbitMQ message**.  
+   - It **generates a detailed event description** using **AI-powered automation**.  
+   - The description is **translated into multiple languages** (if needed).  
+   - The **processed event data** is prepared for database insertion.
+
+4. **AI-Assisted Data Processing**  
+   - The **AI Agent SQL** structures and updates the event with a **rich description**.  
+   - The enriched event is **saved into PostgreSQL**.
+
+5. **Event Distribution**  
+   - The final event details are **shared in a Telegram channel**.  
+   - Future enhancements can include **Elasticsearch indexing** or **email notifications**.
+
+### 🔍 Get Events
+To fetch all events from the API, use:
 
 ```bash
 GET http://localhost/api/events
 ```
 
-You’ll receive a JSON response containing matching events with their detailed descriptions and translations.
+## 🛑 Stopping the Services
+To **stop and remove** all containers:
 
-## Contributing
-Contributions are welcome! If you have suggestions, bug fixes, or improvements, please open an issue or submit a pull request. Let’s build an even more awesome automation system together.
+```bash
+docker-compose down
+```
 
-## License
-This project is licensed under the MIT License.
+## 🤝 Contributing
+Feel free to **submit pull requests** or **suggest improvements** for this setup!
 
-## Acknowledgements
-Big thanks to the open-source communities behind Symfony, n8n, PostgreSQL, RabbitMQ, and Redis.
-Kudos to our AI assistants (like ChatGPT) for their tireless work.
-And thank you for joining us on this automation adventure!
+## 📜 License
+This project is open-source and available under the **MIT License**.
 
 
 
