@@ -91,7 +91,7 @@ Once an event is created, an automated workflow is triggered. Here’s what happ
    - The enriched event is **saved into PostgreSQL**.
 
 5. **Event Distribution**  
-   - The final event details are **shared in a Telegram channel**.  
+   - The final event details are **shared in a Telegram channel, Slack & Gmail**.  
    - Future enhancements can include **Elasticsearch indexing** or **email notifications**.
 
 ### 🔍 Get Events
