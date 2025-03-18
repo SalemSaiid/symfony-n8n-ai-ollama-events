@@ -21,6 +21,7 @@ services:
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.email=ton@email.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--ping=true"  # Activation du healthcheck
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.127.0.0.1.nip.io`)"
@@ -131,6 +132,7 @@ services:
       - N8N_HOST=n8n.127.0.0.1.nip.io
       - WEBHOOK_URL=https://n8n.127.0.0.1.nip.io/
       - N8N_SECURE_COOKIE=false
+      - OLLAMA_API_BASE=http://ollama:11434
     volumes:
       - n8n_data:/home/node/.n8n
     networks:
@@ -142,6 +144,40 @@ services:
       - "traefik.http.routers.n8n.tls.certresolver=myresolver"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
 
+  openui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openui
+    ports:
+      - "3000:8080"  # expose le port 3000 de l'hôte sur le port 8080 du conteneur
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434  # URL du service Ollama
+    volumes:
+      - open-webui:/app/backend/data
+    networks:
+      - traefik_net
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.openui.rule=Host(`openui.127.0.0.1.nip.io`)"
+      - "traefik.http.routers.openui.entrypoints=web"
+      - "traefik.http.services.openui.loadbalancer.server.port=8080"
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"  # Expose le port 11434 pour que OpenUI puisse y accéder
+    environment:
+      - OLLAMA_API_KEY=your-api-key-here  # Remplacer par ta clé API Ollama si nécessaire
+    networks:
+      - traefik_net
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ollama.rule=Host(`ollama.127.0.0.1.nip.io`)"
+      - "traefik.http.routers.ollama.entrypoints=web"
+      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+
 networks:
   traefik_net:
     external: true
@@ -150,3 +186,4 @@ volumes:
   postgres_data:
   n8n_data:
   letsencrypt:
+  open-webui:

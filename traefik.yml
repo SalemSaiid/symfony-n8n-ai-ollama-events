@@ -15,3 +15,6 @@ providers:
 
 log:
   level: DEBUG
+
+ping:
+  entryPoint: "web"
