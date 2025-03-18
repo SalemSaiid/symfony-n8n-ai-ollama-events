@@ -36,8 +36,8 @@ This repository provides a fully functional Docker-based setup for a Symfony app
 ## 📦 Installation
 1. **Clone the repository**:
       ```bash
-   git clone https://github.com/yourusername/symfony-n8n-openai-events.git
-       cd symfony-n8n-openai-events
+   git clone https://github.com/SalemSaiid/symfony-n8n-ai-ollama-events
+       cd symfony-n8n-ai-ollama-events
    ```
 2. **Create a `.env` file** and configure environment variables if needed.
 3. **Start the services**:
